@@ -1,10 +1,25 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+# Address Routes
 app_address_index:
   path: /
+  controller: App\Controller\AddressController::index
+
+app_address_index_first_rows:
+  path: /{first}/{rows}
   controller: App\Controller\AddressController::index
 
 app_address_store:
   path: /store
   controller: App\Controller\AddressController::store
+
+# Country Routes
+app_country_cities:
+  path: /country/cities
+  controller: App\Controller\CountryController::getCities
+
+app_country_cities_id:
+  path: /country/cities/{id}
+  controller: App\Controller\CountryController::getCities

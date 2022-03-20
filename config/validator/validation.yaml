@@ -1,0 +1,37 @@
+App\Entity\Address:
+  properties:
+    first_name:
+      - NotBlank:
+          message: 'firstName must have a value'
+      - Regex:
+          pattern: "/^[a-zA-Z`']+$/"
+          message: 'firstName must only be consist of alphabet'
+    last_name:
+      - NotBlank:
+          message: 'lastName must have a value'
+      - Regex:
+          pattern: "/^[a-zA-Z`']+$/"
+          message: 'lastName must only be consist of alphabet'
+    street_and_number:
+      - NotBlank:
+          message: 'streetAndNumber must have a value'
+      - Regex:
+          pattern: "/^[a-zA-Z`',0-9() \\.]+$/"
+          message: 'streetAndNumber must only be consist of alphabet, numbers, comma and braces'
+    zip:
+      - NotBlank:
+          message: 'zip must have a value'
+      - Regex:
+          pattern: '/\d/'
+          message: 'zip must only be consist of numbers'
+    phone_number:
+      - NotBlank:
+          message: 'phoneNumber must have a value'
+      - Regex:
+          pattern: '/\d{10,15}/'
+          message: 'phoneNumber must be consist of 10 to 15 digits'
+    email_address:
+      - NotBlank:
+          message: 'email address must have a value'
+      - Email:
+          message: The email "{{ value }}" is not a valid email

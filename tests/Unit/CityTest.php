@@ -2,15 +2,14 @@
 
 namespace App\Tests\Unit;
 
+use App\Factories\CityFactory;
 use PHPUnit\Framework\TestCase;
 
 class CityTest extends TestCase
 {
-    public function testHasACountry(): array
+    public function testCityHasTitle(): void
     {
-        $country = [];
-        $this->assertEmpty($country);
-
-        return $country;
+        $city = CityFactory::create();
+        $this->assertIsString($city->getTitle());
     }
 }

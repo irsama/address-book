@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AddressController!{% endblock %}
+{% block title %}Address List{% endblock %}
 
 {% block body %}
 <style>
@@ -9,12 +9,21 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'D:/projects/websites/AddressBook/website/src/Controller/AddressController.php'|file_link(0) }}">src/Controller/AddressController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'D:/projects/websites/AddressBook/website/templates/address/index.html.twig'|file_link(0) }}">templates/address/index.html.twig</a></code></li>
-    </ul>
+    <h1>Address List</h1>
+    <table>
+        <tr>
+            <th>Firstname</th>
+            <th>Lastname</th>
+        </tr>
+        {%  for address in addressList %}
+            <tr class="table-row">
+                <td>{{ address.getFirstName() }}</td>
+                <td>{{ address.getLastName() }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <a href="/store">Add</a>
+    <a href="#">Edit</a>
+    <a href="#">Delete</a>
 </div>
 {% endblock %}

@@ -38,7 +38,7 @@ class Address
     private $zip;
 
     /**
-     * @ORM\ManyToOne(targetEntity=City::class)
+     * @ORM\ManyToOne(targetEntity=City::class, cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $city;
@@ -49,7 +49,7 @@ class Address
     private $phone_number;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="date")
      */
     private $birthday;
 

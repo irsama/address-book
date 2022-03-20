@@ -1,20 +1,73 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AddressController!{% endblock %}
+{% block title %}New Address{% endblock %}
 
 {% block body %}
 <style>
     .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    .example-wrapper code { background: #ffffff; padding: 2px 6px; }
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'D:/projects/websites/AddressBook/website/src/Controller/AddressController.php'|file_link(0) }}">src/Controller/AddressController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'D:/projects/websites/AddressBook/website/templates/address/store.html.twig'|file_link(0) }}">templates/address/store.html.twig</a></code></li>
-    </ul>
+    {{ form(form) }}
+    <img id="address_picture" src="" alt="picture of address"/>
 </div>
+<script type="text/javascript">
+    countryDropDown = document.getElementById('address_chosenCountry');
+    countryDropDown.addEventListener("change", loadXMLDoc);
+    cityDropDown = document.getElementById('address_chosenCity');
+    id = countryDropDown.value;
+    if(cityDropDown.options[0].text === 'select your city') {
+        cityDropDown.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.innerHTML = 'select your city';
+        cityDropDown.appendChild(opt);
+    }
+    if(id!=''){
+        loadXMLDoc();
+    }
+    function loadXMLDoc() {
+        const id = countryDropDown.value;
+        if(id != '') {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                    if (xmlhttp.status == 200) {
+                        const cities = JSON.parse(xmlhttp.responseText);
+                        cityDropDown.innerHTML = '';
+                        const opt = document.createElement('option');
+                        opt.value = '';
+                        opt.innerHTML = 'select your city';
+                        cityDropDown.appendChild(opt);
+                        cities.forEach(city => {
+                            const opt = document.createElement('option');
+                            opt.value = city.id;
+                            opt.innerHTML = city.title;
+                            cityDropDown.appendChild(opt);
+                        });
+                    } else if (xmlhttp.status == 400) {
+                        alert('There was an error 400');
+                    } else {
+                        alert('something else other than 200 was returned');
+                    }
+                }
+            };
+            xmlhttp.open("GET", "country/cities/" + id, true);
+            xmlhttp.send();
+        }else {
+            cityDropDown.innerHTML = 'select your city';
+        }
+    }
+    function showImage(src,target) {
+        const fr=new FileReader();
+        fr.onload = function(e) { target.src = this.result; };
+        src.addEventListener("change",function() {
+            fr.readAsDataURL(src.files[0]);
+        });
+    }
+    const src = document.getElementById("address_pictureFile");
+    const target = document.getElementById("address_picture");
+    showImage(src,target);
+</script>
 {% endblock %}

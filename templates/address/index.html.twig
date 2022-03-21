@@ -16,14 +16,29 @@
             <th>Lastname</th>
         </tr>
         {%  for address in addressList %}
-            <tr class="table-row">
+            <tr class="table-row" data-id="{{ address.getId() }}">
                 <td>{{ address.getFirstName() }}</td>
                 <td>{{ address.getLastName() }}</td>
             </tr>
         {% endfor %}
     </table>
     <a href="/store">Add</a>
-    <a href="#">Edit</a>
-    <a href="#">Delete</a>
+    <a onclick="goToPage();">Edit</a>
+    <a href="#" onclick="goToPage('delete');">Delete</a>
 </div>
+<script type="text/javascript">
+    const myFunction = function() {
+        const attribute = this.getAttribute("data-id");
+        document.cookie = "address-id="+attribute;
+    };
+    const elements = document.getElementsByClassName("table-row");
+    Array.from(elements).forEach(function(element) {
+        element.addEventListener('click', myFunction);
+    });
+    function goToPage(baseUrl='update'){
+        let addressId= document.cookie;
+        addressId = addressId.substring(addressId.indexOf('=')+1,addressId.length);
+        window.location = baseUrl + '/id/'+addressId;
+    }
+</script>
 {% endblock %}

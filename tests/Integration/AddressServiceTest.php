@@ -3,7 +3,6 @@
 namespace App\Tests\Integration;
 
 use App\Factories\AddressFactory;
-use App\Factories\CountryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class AddressServiceTest extends KernelTestCase
@@ -39,5 +38,41 @@ class AddressServiceTest extends KernelTestCase
         $address = AddressFactory::create();
         $address = $addressService->create($address);
         $this->assertIsInt($address->getId());
+    }
+    public function testUpdateAddressFromDatabase()
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $addressService = $container->get('app.address');
+        $address = AddressFactory::create();
+        $currentAddress = $addressService->create($address);
+
+        $addressForUpdate = AddressFactory::create();
+        $currentAddress->setFirstName($addressForUpdate->getFirstName());
+        $updatedAddress = $addressService->update($currentAddress);
+
+        $this->assertEquals($updatedAddress->getFirstName(),$addressForUpdate->getFirstName());
+    }
+    public function testDeleteAddressFromDatabase()
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $addressService = $container->get('app.address');
+        $address = AddressFactory::create();
+        $address = $addressService->create($address);
+        $addressId = $address->getId();
+        $addressList = $addressService->getAll();
+        $addressIds = [];
+        foreach ($addressList as $addressIndividual){
+            array_push($addressIds,$addressIndividual->getId());
+        }
+        $this->assertContains($addressId,$addressIds);
+        $addressService->delete($address->getId());
+        $addressList = $addressService->getAll();
+        $addressIds = [];
+        foreach ($addressList as $addressIndividual){
+            array_push($addressIds,$addressIndividual->getId());
+        }
+        $this->assertNotContains($addressId,$addressIds);
     }
 }

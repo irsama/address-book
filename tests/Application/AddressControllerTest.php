@@ -33,12 +33,12 @@ class AddressControllerTest extends WebTestCase
         $client = static::createClient();
         $first=0;
         $rows=7;
-        $crawler = $client->request('GET', '/'.$first.'/'.$rows);
+        $crawler = $client->request('GET', 'first/'.$first.'rows/'.$rows);
 
         $this->assertResponseIsSuccessful();
 
         $this->assertSelectorExists('table');
-        $this->assertLessThan($rows,count($crawler->filter('tr.table-row')));
+        $this->assertLessThanOrEqual($rows,count($crawler->filter('tr.table-row')));
 
     }
     public function testAddNewPageHasForm(): void
@@ -92,5 +92,94 @@ class AddressControllerTest extends WebTestCase
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('div.alert-error', 'Failure during register address!');
+    }
+    public function testUpdatePageShowCorrectAddress(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $addressService = $container->get('app.address');
+        $address = $addressService->find(1);
+
+        $crawler = $client->request('GET', '/update/id/'.$address->getId());
+        $buttonCrawlerNode = $crawler->selectButton('save');
+
+        $form = $buttonCrawlerNode->form();
+        $this->assertEquals($form['address[id]']->getValue(),$address->getId());
+    }
+    public function testUpdatePageUpdateAddress(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $addressService = $container->get('app.address');
+        $address = $addressService->find(1);
+
+        $crawler = $client->request('GET', '/update/id/'.$address->getId());
+        $buttonCrawlerNode = $crawler->selectButton('save');
+
+        $form = $buttonCrawlerNode->form();
+        $form['address[id]'] = $address->getId();
+        $form['address[firstName]'] = $address->getFirstName();
+        $form['address[lastName]'] = $address->getLastName();
+        $form['address[streetAndNumber]'] = $address->getStreetAndNumber();
+        $form['address[zip]'] = $address->getZip();
+        $form['address[birthday][day]']->select((int)date('d' ,$address->getBirthday()->getTimestamp()));
+        $form['address[birthday][month]']->select((int)date('m' ,$address->getBirthday()->getTimestamp()));
+        $form['address[birthday][year]']->select((int)date('Y' ,$address->getBirthday()->getTimestamp()));
+        $form['address[emailAddress]'] = $address->getEmailAddress();
+        $form['address[phoneNumber]'] = $address->getPhoneNumber();
+        $form['address[chosenCity]'] = rand(1,10);
+        $crawler = $client->submit($form);
+        $this->assertResponseRedirects();
+    }
+    public function testUpdatePageDoseNotUpdateWrongAddress(): void
+    {
+        $client = static::createClient();
+        $address = AddressFactory::create();
+        $crawler = $client->request('GET', '/update');
+        $buttonCrawlerNode = $crawler->selectButton('save');
+
+        $form = $buttonCrawlerNode->form();
+        $form['address[firstName]'] = 456;
+        $form['address[lastName]'] = $address->getLastName();
+        $form['address[streetAndNumber]'] = $address->getStreetAndNumber();
+        $form['address[zip]'] = $address->getZip();
+        $form['address[birthday][day]']->select((int)date('d' ,$address->getBirthday()->getTimestamp()));
+        $form['address[birthday][month]']->select((int)date('m' ,$address->getBirthday()->getTimestamp()));
+        $form['address[birthday][year]']->select((int)date('Y' ,$address->getBirthday()->getTimestamp()));
+        $form['address[emailAddress]'] = $address->getEmailAddress();
+        $form['address[phoneNumber]'] = $address->getPhoneNumber();
+        $form['address[chosenCity]'] = rand(1,10);
+        $crawler = $client->submit($form);
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('div.alert-error', 'Failure during register address!');
+    }
+    public function testDeletePageFetchCorrectAddress(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $addressService = $container->get('app.address');
+        $addressList = $addressService->getAll();
+        $address = $addressService->find($addressList[count($addressList)-1]->getId());
+
+        $crawler = $client->request('GET', '/delete/id/'.$address->getId());
+        $buttonCrawlerNode = $crawler->selectButton('delete');
+
+        $form = $buttonCrawlerNode->form();
+        $this->assertEquals($form['address[id]']->getValue(),$address->getId());
+    }
+    public function testDeletePageDeleteAddress(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $addressService = $container->get('app.address');
+        $addressList = $addressService->getAll();
+        $address = $addressService->find($addressList[count($addressList)-1]->getId());
+
+        $crawler = $client->request('GET', '/delete/id/'.$address->getId());
+        $buttonCrawlerNode = $crawler->selectButton('delete');
+        $form = $buttonCrawlerNode->form();
+
+        $crawler = $client->submit($form);
+        $this->assertResponseRedirects();
     }
 }

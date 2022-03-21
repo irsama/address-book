@@ -29,14 +29,23 @@ final class AddressRepository implements IAddressRepository
         return ($address);
     }
 
-    public function update($id, array $attributes): bool
+    public function update(int $id, Address $address): Address
     {
-        $address = $this->objectRepository->find($id);
-        $this->entityManager->persist($address);
+        $currentAddress = $this->objectRepository->find($id);
+        $currentAddress->setFirstName($address->getFirstName());
+        $currentAddress->setLastName($address->getLastName());
+        $currentAddress->setStreetAndNumber($address->getStreetAndNumber());
+        $currentAddress->setZip($address->getZip());
+        $currentAddress->setBirthday($address->getBirthday());
+        $currentAddress->setPhoneNumber($address->getPhoneNumber());
+        $currentAddress->setEmailAddress($address->getEmailAddress());
+        $currentAddress->setPicture($address->getPicture());
+        $this->entityManager->persist($currentAddress);
         $this->entityManager->flush();
+        return ($currentAddress);
     }
 
-    public function delete(array $id): bool
+    public function delete(int $id): void
     {
         $address = $this->objectRepository->find($id);
         $this->entityManager->remove($address);

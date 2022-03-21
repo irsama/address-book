@@ -17,17 +17,17 @@ interface IAddressRepository extends IBaseRepository
     public function create(Address $address): Address;
 
     /**
-     * @param $id
-     * @param array $attributes
-     * @return bool
+     * @param int $id
+     * @param Address $address
+     * @return Address
      */
-    public function update($id, array $attributes): bool;
+    public function update(int $id, Address $address): Address;
 
     /**
-     * @param array $id
+     * @param int $id
      * @return bool
      */
-    public function delete(array $id): bool;
+    public function delete(int $id): void;
 
     /**
      * @param $id

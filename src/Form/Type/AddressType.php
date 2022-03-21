@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -50,6 +51,7 @@ class AddressType extends AbstractType
             ->add('phoneNumber', TextType::class)
             ->add('emailAddress', TextType::class)
             ->add('birthday', BirthdayType::class)
+            ->add('picture', HiddenType::class)
             ->add('pictureFile', FileType::class, ['required' => false, 'mapped'=>false,
                 'constraints' => [
                     new File([

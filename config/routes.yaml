@@ -8,12 +8,20 @@ app_address_index:
   controller: App\Controller\AddressController::index
 
 app_address_index_first_rows:
-  path: /{first}/{rows}
+  path: /first/{first}/rows/{rows}
   controller: App\Controller\AddressController::index
 
 app_address_store:
   path: /store
   controller: App\Controller\AddressController::store
+
+app_address_update:
+  path: /update/id/{id}
+  controller: App\Controller\AddressController::update
+
+app_address_delete:
+  path: /delete/id/{id}
+  controller: App\Controller\AddressController::delete
 
 # Country Routes
 app_country_cities:
@@ -21,5 +29,5 @@ app_country_cities:
   controller: App\Controller\CountryController::getCities
 
 app_country_cities_id:
-  path: /country/cities/{id}
+  path: /country/cities/id/{id}
   controller: App\Controller\CountryController::getCities

@@ -10,7 +10,7 @@
 
 <div class="example-wrapper">
     {{ form(form) }}
-    <img id="address_picture" src="" alt="picture of address"/>
+    <img id="address_picture_place_holder" src="" alt="picture of address"/>
 </div>
 <script type="text/javascript">
     countryDropDown = document.getElementById('address_chosenCountry');
@@ -53,7 +53,7 @@
                     }
                 }
             };
-            xmlhttp.open("GET", "country/cities/" + id, true);
+            xmlhttp.open("GET", "/country/cities/id/" + id, true);
             xmlhttp.send();
         }else {
             cityDropDown.innerHTML = 'select your city';
@@ -67,7 +67,7 @@
         });
     }
     const src = document.getElementById("address_pictureFile");
-    const target = document.getElementById("address_picture");
+    const target = document.getElementById("address_picture_place_holder");
     showImage(src,target);
 </script>
 {% endblock %}

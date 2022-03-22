@@ -62,4 +62,29 @@ final class AddressRepository implements IAddressRepository
         return $first === -1 ? $this->objectRepository->findAll()
             :$this->objectRepository->findBy([],[],$rows,$first);
     }
+
+    public function count(): int
+    {
+        return $this->objectRepository->count([]);
+    }
+
+    public function findByEmailAddress(string $emailAddress, int $id = null): ?Address
+    {
+        if($id === null){
+            return $this->objectRepository->findOneBy(['email_address'=>$emailAddress]);
+        }else {
+            $query = $this->entityManager->createQuery(
+                'SELECT a
+            FROM App\Entity\Address a
+            WHERE a.email_address = :email
+            and a.id <> :id'
+            )->setParameter('email', $emailAddress)
+                ->setParameter('id', $id);
+            $result = $query->getResult();
+            if(count($result)>0){
+                return $result[0];
+            }
+        }
+        return null;
+    }
 }

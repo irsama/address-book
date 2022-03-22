@@ -3,71 +3,53 @@
 {% block title %}New Address{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #ffffff; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    {{ form(form) }}
-    <img id="address_picture_place_holder" src="" alt="picture of address"/>
+    <div class="flex-container">
+    <div class="flex-item-12 text-center">
+        <h1>New Address</h1>
+    </div>
+    {{ form_start(form) }}
+    <div class="flex-container">
+        <div class="flex-item-6 text-right">
+            {{ form_row(form.firstName) }}
+        </div>
+        <div class="flex-item-6 text-left">
+            {{ form_row(form.lastName) }}
+        </div>
+        <div class="flex-item-6 text-right">
+            {{ form_row(form.chosenCountry) }}
+        </div>
+        <div class="flex-item-6 text-left">
+            {{ form_row(form.chosenCity) }}
+        </div>
+        <div class="flex-item-6 text-right">
+            {{ form_row(form.streetAndNumber) }}
+        </div>
+        <div class="flex-item-6 text-left">
+            {{ form_row(form.zip) }}
+        </div>
+        <div class="flex-item-6 text-right">
+            {{ form_row(form.phoneNumber) }}
+        </div>
+        <div class="flex-item-6 text-left">
+            {{ form_row(form.emailAddress) }}
+        </div>
+        <div class="flex-item-6 text-right">
+            {{ form_row(form.picture) }}
+            {{ form_row(form.pictureFile) }}
+            <img id="address_picture_place_holder" src=""
+                 alt="picture of address" class="profile"/>
+        </div>
+        <div class="flex-item-6 text-left">
+            {{ form_row(form.birthday) }}
+        </div>
+        <div class="flex-item-6 text-right">
+            {{ form_row(form.save) }}
+        </div>
+        <div class="flex-item-6 text-left">
+            <a class="table-nav-link" href="/">return</a>
+        </div>
+    </div>
+    {{ form_end(form) }}
 </div>
-<script type="text/javascript">
-    countryDropDown = document.getElementById('address_chosenCountry');
-    countryDropDown.addEventListener("change", loadXMLDoc);
-    cityDropDown = document.getElementById('address_chosenCity');
-    id = countryDropDown.value;
-    if(cityDropDown.options[0].text === 'select your city') {
-        cityDropDown.innerHTML = '';
-        const opt = document.createElement('option');
-        opt.value = '';
-        opt.innerHTML = 'select your city';
-        cityDropDown.appendChild(opt);
-    }
-    if(id!=''){
-        loadXMLDoc();
-    }
-    function loadXMLDoc() {
-        const id = countryDropDown.value;
-        if(id != '') {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function () {
-                if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-                    if (xmlhttp.status == 200) {
-                        const cities = JSON.parse(xmlhttp.responseText);
-                        cityDropDown.innerHTML = '';
-                        const opt = document.createElement('option');
-                        opt.value = '';
-                        opt.innerHTML = 'select your city';
-                        cityDropDown.appendChild(opt);
-                        cities.forEach(city => {
-                            const opt = document.createElement('option');
-                            opt.value = city.id;
-                            opt.innerHTML = city.title;
-                            cityDropDown.appendChild(opt);
-                        });
-                    } else if (xmlhttp.status == 400) {
-                        alert('There was an error 400');
-                    } else {
-                        alert('something else other than 200 was returned');
-                    }
-                }
-            };
-            xmlhttp.open("GET", "/country/cities/id/" + id, true);
-            xmlhttp.send();
-        }else {
-            cityDropDown.innerHTML = 'select your city';
-        }
-    }
-    function showImage(src,target) {
-        const fr=new FileReader();
-        fr.onload = function(e) { target.src = this.result; };
-        src.addEventListener("change",function() {
-            fr.readAsDataURL(src.files[0]);
-        });
-    }
-    const src = document.getElementById("address_pictureFile");
-    const target = document.getElementById("address_picture_place_holder");
-    showImage(src,target);
-</script>
+    <script src="/build/load_country_cities_and_image.js"></script>
 {% endblock %}

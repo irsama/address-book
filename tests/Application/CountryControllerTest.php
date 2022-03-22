@@ -2,8 +2,8 @@
 
 namespace App\Tests\Application;
 
-use App\Factories\CityFactory;
 use App\Factories\CountryFactory;
+use App\Tests\PrepareTestDatabase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CountryControllerTest extends WebTestCase
@@ -12,7 +12,7 @@ class CountryControllerTest extends WebTestCase
     {
 
         $client = static::createClient();
-
+        PrepareTestDatabase::load();
         $container = static::getContainer();
         $countryService = $container->get('app.country');
         for($counter=1;$counter<5;$counter++){

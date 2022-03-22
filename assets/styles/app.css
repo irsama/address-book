@@ -1,3 +1,45 @@
 body {
-    background-color: lightgray;
+    background-color: #ffffff;
+}
+.address-table, .address-table tr, .address-table th, .address-table td{
+    border: solid 1px black;
+}
+.address-table tr.alternate-row{
+    background-color: #e8f8ff;
+}
+img.profile_thumbnail{
+    width:48px;
+    height:48px;
+}
+a.table-nav-link{
+    display: inline-block;
+    text-decoration: none;
+    color: black;
+    border: outset 3px black;
+    border-radius: 5px;
+    width: 60px;
+    text-align: center;
+}
+a.btn{
+    display: inline-block;
+    text-decoration: none;
+    border-radius: 5px;
+    width: 100px;
+    color: white;
+    text-align: center;
+}
+a.btn.btn-success{
+    background-color:  #00C851;
+    border: outset 2px  #00C851;
+}
+a.btn.btn-info{
+    background-color: #33b5e5;
+    border: outset 2px #33b5e5;
+}
+a.btn.btn-danger{
+    background-color: #ff4444;
+    border: outset 2px #ff4444;
+}
+div.btn-container{
+    margin-top: 10px;
 }

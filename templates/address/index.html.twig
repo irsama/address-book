@@ -10,35 +10,88 @@
 
 <div class="example-wrapper">
     <h1>Address List</h1>
-    <table>
-        <tr>
-            <th>Firstname</th>
-            <th>Lastname</th>
-        </tr>
-        {%  for address in addressList %}
-            <tr class="table-row" data-id="{{ address.getId() }}">
-                <td>{{ address.getFirstName() }}</td>
-                <td>{{ address.getLastName() }}</td>
+    {% set pervFirst = first - 7 > 0 ? first - 7 : 0 %}
+    {% set nextFirst = first + 7 < count  ? first + 7 : (first - 7 > 0 ? first - 7 : 0) %}
+    {% set lastFirst = count - 7 > 0  ? (count // 7 * 7) : 0 %}
+    {% set counterRow = 1 %}
+    <table class="address-table">
+        <thead>
+            <tr>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Country</th>
+                <th>City</th>
+                <th>StreetAndNumber</th>
+                <th>Zip</th>
+                <th>PhoneNumber</th>
+                <th>EmailAddress</th>
+                <th>Picture</th>
             </tr>
-        {% endfor %}
+        </thead>
+        <tbody>
+            {%  for address in addressList %}
+                {% set alternateRowClass = '' %}
+                {% if counterRow % 2 == 0 %}
+                    {% set alternateRowClass = 'alternate-row' %}
+                {% endif %}
+                <tr class="table-row {{ alternateRowClass }}" data-id="{{ address.getId() }}">
+                    <td>{{ address.getFirstName() }}</td>
+                    <td>{{ address.getLastName() }}</td>
+                    <td>{{ address.getCity().getCountry().getTitle() }}</td>
+                    <td>{{ address.getCity().getTitle() }}</td>
+                    <td>{{ address.getStreetandnumber() }}</td>
+                    <td>{{ address.getZip() }}</td>
+                    <td>{{ address.getPhoneNumber() }}</td>
+                    <td>{{ address.getEmailAddress() }}</td>
+                    <td>
+                        <img alt="profile" class="profile_thumbnail"
+                                src ="{{ asset('uploadedFile/address/images/' ~ address.getPicture()) }}">
+                    </td>
+                </tr>
+                {% set counterRow = counterRow + 1 %}
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="9">
+                    <div style="width: 100%; text-align: center">
+                        <a class="table-nav-link" href="/first/0/rows/7">first</a>
+                        <a class="table-nav-link" href="/first/{{ pervFirst }}/rows/7">perv</a>
+                        <a class="table-nav-link" href="/first/{{ nextFirst }}/rows/7">next</a>
+                        <a class="table-nav-link" href="/first/{{ lastFirst }}/rows/7">last</a>
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
     </table>
-    <a href="/store">Add</a>
-    <a onclick="goToPage();">Edit</a>
-    <a href="#" onclick="goToPage('delete');">Delete</a>
+    <div class="btn-container">
+        <a class="btn btn-success" href="/store">Add</a>
+        <a class="btn btn-info" href="#" onclick="goToPage();">Edit</a>
+        <a class="btn btn-danger" href="#" onclick="goToPage('delete');">Delete</a>
+    </div>
 </div>
 <script type="text/javascript">
-    const myFunction = function() {
+    const setCookie = function() {
         const attribute = this.getAttribute("data-id");
         document.cookie = "address-id="+attribute;
+        const elements = document.getElementsByClassName("table-row");
+        Array.from(elements).forEach(function(element) {
+            element.classList.remove("selected-row");
+        });
+        this.classList.add("selected-row");
     };
     const elements = document.getElementsByClassName("table-row");
     Array.from(elements).forEach(function(element) {
-        element.addEventListener('click', myFunction);
+        element.addEventListener('click', setCookie);
     });
     function goToPage(baseUrl='update'){
         let addressId= document.cookie;
         addressId = addressId.substring(addressId.indexOf('=')+1,addressId.length);
-        window.location = baseUrl + '/id/'+addressId;
+        if(addressId) {
+            window.location = baseUrl + '/id/' + addressId;
+        } else {
+            alert('Please select a row from table by click on it')
+        }
     }
 </script>
 {% endblock %}

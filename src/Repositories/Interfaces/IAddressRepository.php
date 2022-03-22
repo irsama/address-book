@@ -34,4 +34,16 @@ interface IAddressRepository extends IBaseRepository
      * @return Address
      */
     public function find($id): ?Address;
+
+    /**
+     * @return int
+     */
+    public function count(): int;
+
+    /**
+     * @param string $emailAddress
+     * @param int $id
+     * @return Address
+     */
+    public function findByEmailAddress(string $emailAddress, int $id): ?Address;
 }

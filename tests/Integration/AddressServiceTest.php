@@ -3,10 +3,17 @@
 namespace App\Tests\Integration;
 
 use App\Factories\AddressFactory;
+use App\Tests\PrepareTestDatabase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class AddressServiceTest extends KernelTestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        PrepareTestDatabase::load();
+    }
     public function testReturnAddressList()
     {
         self::bootKernel();

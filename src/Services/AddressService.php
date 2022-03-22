@@ -19,11 +19,22 @@ class AddressService
     }
     public function getAll($first=-1, $rows=7): array
     {
-        return $this->addressRepository->getAll($first, $rows);
+        if($first === -1 ) {
+            return $this->addressRepository->getAll();
+        } else {
+            $count = $this->addressRepository->count();
+            $first = $first > ($count - $rows) ? ($count - $rows) : $first;
+            $first = $first < -1 ? 0:$first;
+            return $this->addressRepository->getAll($first, $rows);
+        }
     }
     public function find($id): ?Address
     {
         return $this->addressRepository->find($id);
+    }
+    public function findByEmailAddress(string $emailAddress, int $id = null): ?Address
+    {
+        return $this->addressRepository->findByEmailAddress($emailAddress, $id);
     }
     public function delete($id, $form = null)
     {
@@ -93,5 +104,9 @@ class AddressService
         }
 
         return $this->addressRepository->update($id, $address);
+    }
+    public function count(): int
+    {
+        return $this->addressRepository->count();
     }
 }

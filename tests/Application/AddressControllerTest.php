@@ -3,6 +3,7 @@
 namespace App\Tests\Application;
 
 use App\Factories\AddressFactory;
+use App\Tests\PrepareTestDatabase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AddressControllerTest extends WebTestCase
@@ -10,6 +11,7 @@ class AddressControllerTest extends WebTestCase
     public function testListPageHasATitle(): void
     {
         $client = static::createClient();
+        PrepareTestDatabase::load();
         $crawler = $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
@@ -18,6 +20,7 @@ class AddressControllerTest extends WebTestCase
     public function testListPageHasATableOfAddressesAndLinks(): void
     {
         $client = static::createClient();
+        PrepareTestDatabase::load();
         $crawler = $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
@@ -31,6 +34,7 @@ class AddressControllerTest extends WebTestCase
     public function testListPageHasATableOfAddressesWithLimitation(): void
     {
         $client = static::createClient();
+        PrepareTestDatabase::load();
         $first=0;
         $rows=7;
         $crawler = $client->request('GET', 'first/'.$first.'rows/'.$rows);
@@ -53,6 +57,7 @@ class AddressControllerTest extends WebTestCase
     public function testAddNewPageAddAddress(): void
     {
         $client = static::createClient();
+        PrepareTestDatabase::load();
         $address = AddressFactory::create();
         $crawler = $client->request('GET', '/store');
         $buttonCrawlerNode = $crawler->selectButton('save');
@@ -74,6 +79,7 @@ class AddressControllerTest extends WebTestCase
     public function testAddNewPageDoseNotAddWrongAddress(): void
     {
         $client = static::createClient();
+        PrepareTestDatabase::load();
         $address = AddressFactory::create();
         $crawler = $client->request('GET', '/store');
         $buttonCrawlerNode = $crawler->selectButton('save');
@@ -93,9 +99,36 @@ class AddressControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('div.alert-error', 'Failure during register address!');
     }
+    public function testAddNewPageDoseNotAddAddressWithDuplicateEmail(): void
+    {
+        $client = static::createClient();
+        PrepareTestDatabase::load();
+        $container = static::getContainer();
+        $addressService = $container->get('app.address');
+        $existAddress = $addressService->find(1);
+        $address = AddressFactory::create();
+        $crawler = $client->request('GET', '/store');
+        $buttonCrawlerNode = $crawler->selectButton('save');
+
+        $form = $buttonCrawlerNode->form();
+        $form['address[firstName]'] = $address->getFirstName();
+        $form['address[lastName]'] = $address->getLastName();
+        $form['address[streetAndNumber]'] = $address->getStreetAndNumber();
+        $form['address[zip]'] = $address->getZip();
+        $form['address[birthday][day]']->select((int)date('d' ,$address->getBirthday()->getTimestamp()));
+        $form['address[birthday][month]']->select((int)date('m' ,$address->getBirthday()->getTimestamp()));
+        $form['address[birthday][year]']->select((int)date('Y' ,$address->getBirthday()->getTimestamp()));
+        $form['address[emailAddress]'] = $existAddress->getEmailAddress();
+        $form['address[phoneNumber]'] = $address->getPhoneNumber();
+        $form['address[chosenCity]'] = rand(1,10);
+        $crawler = $client->submit($form);
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('div.alert-error', 'Email Address already exist!');
+    }
     public function testUpdatePageShowCorrectAddress(): void
     {
         $client = static::createClient();
+        PrepareTestDatabase::load();
         $container = static::getContainer();
         $addressService = $container->get('app.address');
         $address = $addressService->find(1);
@@ -109,6 +142,7 @@ class AddressControllerTest extends WebTestCase
     public function testUpdatePageUpdateAddress(): void
     {
         $client = static::createClient();
+        PrepareTestDatabase::load();
         $container = static::getContainer();
         $addressService = $container->get('app.address');
         $address = $addressService->find(1);
@@ -117,7 +151,6 @@ class AddressControllerTest extends WebTestCase
         $buttonCrawlerNode = $crawler->selectButton('save');
 
         $form = $buttonCrawlerNode->form();
-        $form['address[id]'] = $address->getId();
         $form['address[firstName]'] = $address->getFirstName();
         $form['address[lastName]'] = $address->getLastName();
         $form['address[streetAndNumber]'] = $address->getStreetAndNumber();
@@ -134,8 +167,12 @@ class AddressControllerTest extends WebTestCase
     public function testUpdatePageDoseNotUpdateWrongAddress(): void
     {
         $client = static::createClient();
-        $address = AddressFactory::create();
-        $crawler = $client->request('GET', '/update');
+        PrepareTestDatabase::load();
+        $container = static::getContainer();
+        $addressService = $container->get('app.address');
+        $address = $addressService->find(1);
+
+        $crawler = $client->request('GET', '/update/id/'.$address->getId());
         $buttonCrawlerNode = $crawler->selectButton('save');
 
         $form = $buttonCrawlerNode->form();
@@ -151,11 +188,39 @@ class AddressControllerTest extends WebTestCase
         $form['address[chosenCity]'] = rand(1,10);
         $crawler = $client->submit($form);
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('div.alert-error', 'Failure during register address!');
+        $this->assertSelectorTextContains('div.alert-error', 'Failure during update address!');
+    }
+    public function testUpdatePageDoesNotUpdateAddressWithDuplicateEmail(): void
+    {
+        $client = static::createClient();
+        PrepareTestDatabase::load();
+        $container = static::getContainer();
+        $addressService = $container->get('app.address');
+        $address = $addressService->find(1);
+        $secondAddress = $addressService->find(2);
+
+        $crawler = $client->request('GET', '/update/id/'.$address->getId());
+        $buttonCrawlerNode = $crawler->selectButton('save');
+
+        $form = $buttonCrawlerNode->form();
+        $form['address[firstName]'] = $address->getFirstName();
+        $form['address[lastName]'] = $address->getLastName();
+        $form['address[streetAndNumber]'] = $address->getStreetAndNumber();
+        $form['address[zip]'] = $address->getZip();
+        $form['address[birthday][day]']->select((int)date('d' ,$address->getBirthday()->getTimestamp()));
+        $form['address[birthday][month]']->select((int)date('m' ,$address->getBirthday()->getTimestamp()));
+        $form['address[birthday][year]']->select((int)date('Y' ,$address->getBirthday()->getTimestamp()));
+        $form['address[emailAddress]'] = $secondAddress->getEmailAddress();
+        $form['address[phoneNumber]'] = $address->getPhoneNumber();
+        $form['address[chosenCity]'] = rand(1,10);
+        $crawler = $client->submit($form);
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('div.alert-error', 'Email Address already exist!');
     }
     public function testDeletePageFetchCorrectAddress(): void
     {
         $client = static::createClient();
+        PrepareTestDatabase::load();
         $container = static::getContainer();
         $addressService = $container->get('app.address');
         $addressList = $addressService->getAll();
@@ -165,11 +230,12 @@ class AddressControllerTest extends WebTestCase
         $buttonCrawlerNode = $crawler->selectButton('delete');
 
         $form = $buttonCrawlerNode->form();
-        $this->assertEquals($form['address[id]']->getValue(),$address->getId());
+        $this->assertEquals($form['address_delete[id]']->getValue(),$address->getId());
     }
     public function testDeletePageDeleteAddress(): void
     {
         $client = static::createClient();
+        PrepareTestDatabase::load();
         $container = static::getContainer();
         $addressService = $container->get('app.address');
         $addressList = $addressService->getAll();

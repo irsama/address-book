@@ -57,7 +57,7 @@ final class AddressRepository implements IAddressRepository
         return $this->objectRepository->find($id);
     }
 
-    public function getAll($first= -1, $rows = 7): ?array
+    public function getAll($first = -1, $rows = 7): ?array
     {
         return $first === -1 ? $this->objectRepository->findAll()
             :$this->objectRepository->findBy([],[],$rows,$first);

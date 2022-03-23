@@ -8,7 +8,6 @@ use App\Form\Type\AddressType;
 use App\Repositories\Interfaces\IAddressRepository;
 use App\Repositories\Interfaces\ICityRepository;
 use App\Services\AddressService;
-use App\Tools\UrlParameterValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

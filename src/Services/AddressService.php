@@ -23,7 +23,7 @@ class AddressService
             return $this->addressRepository->getAll();
         } else {
             $count = $this->addressRepository->count();
-            $first = $first > ($count - $rows) ? ($count - $rows) : $first;
+            $first = $first >= $count ? 0 : $first;
             $first = $first < -1 ? 0:$first;
             return $this->addressRepository->getAll($first, $rows);
         }

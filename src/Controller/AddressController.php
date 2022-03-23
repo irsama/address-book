@@ -12,29 +12,16 @@ use App\Tools\UrlParameterValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Validator\Constraints\Collection;
-use Symfony\Component\Validator\Constraints\Optional;
-use Symfony\Component\Validator\Constraints\Type;
+use Symfony\Component\String\Slugger\SluggerInterface;;
 
 class AddressController extends AbstractController
 {
     public function index(Request $request, IAddressRepository $addressRepository): Response
     {
-        $first = $request->query->has('first') ? $request->query->get('first',0):
-            $request->attributes->get('first',0);
-        $rows = $request->query->has('rows') ? $request->query->get('rows',7):
-            $request->attributes->get('rows',7);
-        $constraints = new Collection([
-            'first' => [new Optional(new Type(['type' => 'integer']))],
-            'rows' => [new Optional(new Type(['type' => 'integer']))],
-        ]);
+        $first = $request->attributes->getInt('first');
+        $rows = $request->attributes->getInt('rows' , 7);
         $addressService = new AddressService($addressRepository);
-        if(UrlParameterValidator::validate($request->query->all(), $constraints)) {
-            $addressList = $addressService->getAll($first, $rows);
-        } else {
-            $addressList = $addressService->getAll();
-        }
+        $addressList = $addressService->getAll($first, $rows);
         $count = $addressService->count();
         return $this->render('address/index.html.twig', [
             'addressList' => $addressList,
@@ -72,6 +59,9 @@ class AddressController extends AbstractController
         $address = $this->getAddress($request, $addressService);
         $form = $this->createForm(AddressType::class, $address);
         if($address) {
+            if(!$form->isSubmitted()){
+                $form->get('id')->setData($address->getId());
+            }
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 $emailAddress = $form->get('emailAddress')->getData();
@@ -130,12 +120,7 @@ class AddressController extends AbstractController
      */
     public function getAddress(Request $request, AddressService $addressService): ?Address
     {
-        $constraints = new Collection([
-            'id' => [new Optional(new Type(['type' => 'integer']))],
-        ]);
-        $id = $request->query->has('id') ? $request->query->get('id') :
-            UrlParameterValidator::validate($request->query->all(), $constraints) === true ?
-                $request->attributes->get('id', 0) : 0;
+        $id = $request->attributes->getInt('id');
         return $addressService->find($id);
     }
 }

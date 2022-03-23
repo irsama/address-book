@@ -56,7 +56,7 @@ class AddressServiceTest extends KernelTestCase
 
         $addressForUpdate = AddressFactory::create();
         $currentAddress->setFirstName($addressForUpdate->getFirstName());
-        $updatedAddress = $addressService->update($currentAddress);
+        $updatedAddress = $addressService->update($address->getId() ,$currentAddress);
 
         $this->assertEquals($updatedAddress->getFirstName(),$addressForUpdate->getFirstName());
     }

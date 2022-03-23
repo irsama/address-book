@@ -4,13 +4,13 @@ App\Entity\Address:
       - NotBlank:
           message: 'firstName must have a value'
       - Regex:
-          pattern: "/^[a-zA-Z`']+$/"
+          pattern: "/^[a-zA-Z`' ]+$/"
           message: 'firstName must only be consist of alphabet'
     last_name:
       - NotBlank:
           message: 'lastName must have a value'
       - Regex:
-          pattern: "/^[a-zA-Z`']+$/"
+          pattern: "/^[a-zA-Z`' ]+$/"
           message: 'lastName must only be consist of alphabet'
     street_and_number:
       - NotBlank:

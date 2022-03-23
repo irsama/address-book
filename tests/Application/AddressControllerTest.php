@@ -37,7 +37,7 @@ class AddressControllerTest extends WebTestCase
         PrepareTestDatabase::load();
         $first=0;
         $rows=7;
-        $crawler = $client->request('GET', 'first/'.$first.'rows/'.$rows);
+        $crawler = $client->request('GET', 'first/'.$first.'/rows/'.$rows);
 
         $this->assertResponseIsSuccessful();
 

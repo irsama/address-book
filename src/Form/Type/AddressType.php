@@ -40,6 +40,7 @@ class AddressType extends AbstractType
         }
 
         $builder
+            ->add('id', HiddenType::class, ['mapped'=>false])
             ->add('firstName', TextType::class)
             ->add('lastName', TextType::class)
             ->add('streetAndNumber', TextType::class)

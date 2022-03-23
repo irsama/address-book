@@ -20,7 +20,7 @@ class CountryControllerTest extends WebTestCase
             $countryService->create($country);
         }
 
-        $crawler = $client->xmlHttpRequest('GET', '/country/cities', ['id'=>'1']);
+        $crawler = $client->xmlHttpRequest('GET', '/country/cities/id/1');
 
         $this->assertResponseIsSuccessful();
 
